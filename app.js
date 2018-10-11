@@ -2,9 +2,12 @@ const express = require('express')
 const app = express()
 var exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/rotten-potatoes');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override')
+const port = process.env.PORT || 3000;
+
+app.listen(port);
 
 
 const Review = mongoose.model('Review', {
