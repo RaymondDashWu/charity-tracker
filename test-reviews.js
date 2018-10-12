@@ -12,7 +12,14 @@ const sampleReview = {
 
 chai.use(chaiHttp);
 
-describe('Reviews', () => {
+describe('Reviews', ()  => {
+
+    after(() => {
+      Review.deleteMany({title: 'Super Sweet Review'}).exec((err, reviews) => {
+        console.log(reviews)
+        reviews.remove();
+      })
+    });
 
 // TEST INDEX
 it('should index ALL reviews on / GET', (done) => {
@@ -100,6 +107,5 @@ it('should delete a SINGLE review on /reviews/<id> DELETE', (done) => {
                 done();
             });
     });
-});
 });
 });
