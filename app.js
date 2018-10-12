@@ -1,13 +1,30 @@
 const express = require('express')
 const app = express()
 var exphbs = require('express-handlebars');
-const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override')
 const port = process.env.PORT || 3000;
+const request = require('request');
+// const charityapi = request('https://api.data.charitynavigator.org/v2/Lists?app_id=7d5376af&app_key=d810bb5de257324606de7d614079e569');
 
-app.listen(port);
+// MONGOOSE CONNECT
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
+
+// function printJSONData(jsonObj){
+	
+// 	// iterating over things in the json response.
+// 	for (i = 0; i < jsonObj.length; i++) {
+// 		// printing out fields in the OBJ
+// 		console.log(jsonObj[index].listName);
+// 		console.log(jsonObj[index].listAbstract);
+// 	}
+	
+// }
+// printJSONData(charityapi)
+
+// send json data to handlebars template
+
 
 
 const Review = mongoose.model('Review', {
@@ -21,11 +38,22 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(methodOverride('_method'))
 
-
 app.engine('handlebars', exphbs({
     defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
+
+// app.get('/', (req, res) => {
+//     charityapi, (err, response, body) => {
+//         console.log(res.statusCode)
+//         if(!err && res.statusCode == 200) {
+//             res.render('charities-index', {charities: JSON.parse(body)})
+//         } else {
+//             console.log(err)
+//             res.render('charities-index')
+//         }
+//     }
+// })
 
 app.get('/', (req, res) => {
     Review.find()
@@ -38,6 +66,14 @@ app.get('/', (req, res) => {
             console.log(err);
         })
 })
+
+app.post('/reviews/comments', (req, res) => {
+    Comment.create(req.body).then(comment => {
+      res.status(200).send({ comment: comment });
+    }).catch((err) => {
+      res.status(400).send({ err: err })
+    })
+  })
 
 app.get('/reviews', (req, res) => {
     res.render('reviews-index', {
@@ -95,8 +131,10 @@ app.delete('/reviews/:id', function (req, res) {
   })
 })
 
-app.listen(3000, () => {
-    console.log('App listening on port 3000!')
+app.listen(4000, () => {
+    console.log('App listening on port 4000!')
 })
+
+app.listen(port);
 
 module.exports = app
